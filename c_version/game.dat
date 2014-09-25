@@ -1,0 +1,114 @@
+;
+;   These are the original players and teams in FM. However, they are somewhat
+;   out of date. Numbers of players and teams are not limited as they were in
+;   Speccy days, however, you can have up to 24 teams in a division and 32 players
+;   on the transfer market.
+;
+;   Please note you must have an even number of teams for the program to work
+;   (it will return as ASSERT error if you do not !)
+;
+;   Yes, Swansea, Luton and Brighton really were in the First Division
+;   (aka Premiership) around this time (about 20 years ago).
+;
+:Divison 1
+;
+1Arsenal
+5Aston V.
+4Brighton
+6Coventry
+4Everton
+4Ipswich
+1Liverpool
+7Luton
+6Man.City
+1Man.Utd
+3Norwich
+1Notts.F.
+7Swansea
+4Spurs
+7Watford
+5West Ham
+;
+:Division 2
+;
+4Blackburn
+7Bolton
+7Cambridge
+1Charlton
+4Chelsea
+7Crystal P.
+7Derby Co.
+7Fulham
+7Grimsby
+4Leeds
+1Middlesbro
+7Newcastle
+4Oldham
+4Q.P.R.
+1Rotherham
+4Sheff.Wed
+;
+:Division 3
+;
+5Bradford
+1Brentford
+4Bristol R.
+4Cardiff
+7Doncaster
+1Exeter
+1Lincoln
+4Millwall
+7Newport
+1Orient
+7Oxford
+3Plymouth
+7Preston
+4Reading
+4Southend
+2Walsall
+;
+:Division 4
+;
+7Blackpool
+7Bury
+4Colchester
+1Crewe
+7Darlington
+4Halifax
+4Hartlepool
+7Hereford
+7Hull
+7Mansfield
+7Port Vale
+4Rochdale
+1Scunthorpe
+4Stockport
+7Torquay
+1York City
+;
+:Players
+;
+P.Parkes
+D.Watson
+P.Neal
+A.Martin
+K.Sansom
+M.Mills
+R.Osman
+S.Foster
+B.Robson
+G.Hoddle
+G.Rix
+S.Hunt
+G.Owen
+R.Moses
+B.Talbot
+S.McCall
+C.Regis
+P.Withe
+T.Morley
+P.Barnes
+E.Gates
+K.Reeves
+K.Keegan
+G.Shaw
