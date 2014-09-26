@@ -115,6 +115,14 @@ for i = 1,15 do
 	highlightTest.drawPlayer("D"..i,x,y)
 end
 
+--[[
+
+	Move rendering into highlights.lua passing highlighttest - drawPlayer, drawBall, drawBackground, render only.
+	Create players initial position
+	Movement phase
+	Shooting phase.
+
+--]]
 --- ************************************************************************************************************************************************************************
 --[[
 
