@@ -16,13 +16,14 @@
 local PlayerGraphic = Framework:createClass("gfx.player")
 
 PlayerGraphic.isCameraAtBottom = true 														-- the viewing angle up or down the screen
-PlayerGraphic.TOP = 1 																		-- constants for quasi-static function.
-PlayerGraphic.BOTTOM = 2
+PlayerGraphic.displayUnitRadius = 53 														-- display unit radius
 
 --//	Constructor, takes an assortment of parameters, but none are actually required
 --//	@info [table]	constructor data.
 
 function PlayerGraphic:constructor(info)
+	self.m_modifier = math.random(0,10000)													-- a number used to make things unique
+	self.m_modifier2 = math.random(0,10000)
 	self.m_footPosition = 0 																-- percent in foot position (e.g. back/forward)
 	self:construct() 																		-- build the physical graphics.
 	self:move(info.x or 0,info.y or 0)														-- move it.
@@ -32,9 +33,8 @@ function PlayerGraphic:constructor(info)
 	self:setStrip(info.shirt or "#FFFF00", info.shorts or "#008000")						-- Norwich City strip (Yellow/Green)
 	self:setHair(info.hair or "#663300")													-- Hair colour (brown)
 	self:setRotation(info.direction or 0)													-- set the rotation
-
-	-- arm waving and running animation.
-	-- rescaling size method.
+	self:tag("enterFrame,player")															-- these are ticked.
+	self:setMoving(false)																	-- player moving, so animate arms/feet
 end 
 
 function PlayerGraphic:destructor()
@@ -47,6 +47,21 @@ end
 
 function PlayerGraphic:move(x,y)
 	self.m_group.x,self.m_group.y = x,y 
+end 
+
+--//	Set the radius of the player, if you imagine them in a circle. 
+--//	@radius [number]	radius of enclosing circle in device units
+
+function PlayerGraphic:setRadius(radius)
+	local scale = radius / PlayerGraphic.displayUnitRadius 									-- the actual scale we want
+	self.m_group.xScale,self.m_group.yScale = scale,scale 
+end 
+
+--//	Set player moving
+--//	@isMoving [boolean] true if player moving
+
+function PlayerGraphic:setMoving(isMoving)
+	self.m_isMoving = isMoving 
 end 
 
 --//	Set camera position at the top or bottom - affects the player tilt, so , for example, if the camera is at the bottom
@@ -116,6 +131,29 @@ end
 
 function PlayerGraphic:showShadow(isShown)
 	self.m_gfx.shadow.isVisible = isShown 
+end 
+
+--//	Handle ticks
+--//	@deltaTime [number]		elapsed time in seconds.
+
+function PlayerGraphic:onEnterFrame(deltaTime)
+	if not self.m_isMoving then return end 													-- not moving, don't animate.
+	local feet = math.floor(system.getTimer()/(2+(self.m_modifier%200)/100)+self.m_modifier) % 200
+	feet = math.abs(100-feet)																-- position in sequence
+	self.m_footPosition = feet 																-- update position
+	self:repositionFeet() 																	-- reposition feet
+	self:animateArm(self.m_gfx.arm1,self.m_modifier)										-- animate arms.
+	self:animateArm(self.m_gfx.arm2,self.m_modifier2)
+end 
+
+--//	Animate an arm, both angle and length
+--//	@arm 	[table]	arm object
+--//	@modifier [number] number used to modify movement
+
+function PlayerGraphic:animateArm(arm,modifier)
+	local armmod = math.floor(system.getTimer()/(5+modifier%1000/100)) % 360
+	arm.group.rotation = math.sin(math.rad(armmod+modifier)) * 15
+	arm.group.xScale = math.cos(math.rad(armmod*1.7+modifier*3)) / 3 + 1
 end 
 
 --//	Set a graphic objects colour
@@ -207,8 +245,8 @@ function PlayerGraphic:construct()
 	self.m_gfx.shadow.rotation = -45 self.m_gfx.shadow.xScale = 1.5
 	self.m_gfx.shadow:setFillColor(0,0,0,0.3)
 
-	if true then 																			-- debugging - used to establish the physical 
-		local t = display.newCircle(self.m_group,0,0,53) 									-- diameter of the player.
+	if false then 																			-- debugging - used to establish the physical 
+		local t = display.newCircle(self.m_group,0,0,self.displayUnitRadius) 				-- diameter of the player.
 		t:setFillColor(0,0,0,0) t.strokeWidth = 1 
 		display.newLine(self.m_group,0,-80,0,80)
 		display.newLine(self.m_group,-80,0,80,0)

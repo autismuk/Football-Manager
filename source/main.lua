@@ -26,6 +26,7 @@ display.setStatusBar(display.HiddenStatusBar)													-- hide status bar.
 require("strict")																				-- install strict.lua to track globals etc.
 require("framework.framework")																	-- framework.
 
+
 --require("utils.sound")																			-- sfx singleton
 --require("utils.simplescene")																	-- simple scenes.
 --local fm = require("utils.fontmanager")															-- bitmap font manager
@@ -36,17 +37,22 @@ require("framework.framework")																	-- framework.
 --- ************************************************************************************************************************************************************************
 
 require("gfx.player")
+require("highlights.members")
+
 local r = display.newRect(0,0,640,960) r.anchorX,r.anchorY = 0,0 r:setFillColor(0,0.4,0)
 local players = {}
-for i = 0,10 do
-	local p1 = Framework:new("gfx.player",{ x = i % 3 * 130+100,y = math.floor(i/3)*130+100, marker = false , skin = 80, shirt = "#0000FF", shorts = "#FFFFFF", hair = "#FFFF00"})
+for i = 0,23 do
+	local p1 = Framework:new("gfx.player",{ x = i % 4 * 130+100,y = math.floor(i/4)*130+100, 
+									marker = false , skin = 80, shirt = "#0000FF", shorts = "#FFFFFF", hair = "#111111"})
 	p1:setCamera("bottom")
+	p1:setRadius(20+i*2)
+	p1:setMoving(true)
 	players[#players+1] = p1
 end 
 
 timer.performWithDelay(50,function()
 	local t = math.floor(system.getTimer() / 20)
-	for _,p1 in ipairs(players) do p1:setRotation(t % 360) end
+	for _,p1 in ipairs(players) do p1:setRotation(t % 360+90+_*5) end
 	end,
 -1)
 --- ************************************************************************************************************************************************************************
