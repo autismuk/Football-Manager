@@ -51,8 +51,7 @@ end
 
 --//	Set camera position at the top or bottom - affects the player tilt, so , for example, if the camera is at the bottom
 --// 	then players facing down the field have their front visible. The camera is at the opposite end of the goal, always.
---//	This function is static, e.g. all players will behave similarly. An interesting corollary of this is that the shadow 
---//	is always at -45 degrees, which means that it is different for each half.... will anyone notice ?
+--//	This function is static, e.g. all players will behave similarly. 
 --//	@position [string]	top or bottom accordingly.
 
 function PlayerGraphic:setCamera(position)
@@ -67,6 +66,7 @@ function PlayerGraphic:setRotation(angle)
 	angle = angle or self.m_group.rotation 													-- the angle to rotate by.
 	self.m_group.rotation = angle 															-- rotate the player
 	self.m_gfx.shadow.rotation = -45-angle 													-- the shadow does not rotate
+	--if PlayerGraphic.isCameraAtBottom then self.m_gfx.shadow.rotation = 45-angle end 		-- adjust player shadow for camera position.
 	self.m_gfx.marker.rotation = -angle 													-- the marker does not rotate
 	if not PlayerGraphic.isCameraAtBottom then angle = angle + 180 end 						-- if camera at top, reverse it
 	local event = math.sin(math.rad(angle)) * 12 											-- work out the lean given the camera angle
