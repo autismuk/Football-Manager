@@ -10,7 +10,7 @@ field:setFillColor(0,0.4,0)
 
 function createFoot(yOffset)
 	local foot = display.newGroup()
-	local boot = display.newCircle(foot,0,0,16) boot.yScale = 0.5
+	local boot = display.newCircle(foot,0,0,18) boot.yScale = 0.45
 	boot:setFillColor(0,0,0)
 	display.newLine(foot,6,-3,6,3)
 	display.newLine(foot,2,-3,2,3)
@@ -33,11 +33,19 @@ function createPlayer()
 	local player = {}
 	player.group = display.newGroup()
 	
-	player.marker = display.newGroup() player.group:insert(player.marker)
-	local c 
-	c = display.newCircle(player.marker,0,0,60) c.strokeWidth = 6 c:setFillColor(0,0,0,0) c:setStrokeColor(0,1,1)
-	c = display.newCircle(player.marker,0,0,50) c.strokeWidth = 6 c:setFillColor(0,0,0,0) c:setStrokeColor(0,1,1)
-	player.marker.isVisible = true 
+	local vertices = { 0,-110, 27,-35, 105,-35, 43,16, 65,90, 0,45, -65,90, -43,15, -105,-35, -27,-35, }
+
+	local paint = {
+    	type = "gradient",
+    	color1 = { 0, 1, 1 },
+    	color2 = { 0, 0, 1 },
+    	direction = "down"
+	}
+
+	player.marker = display.newPolygon(player.group,0,0,vertices)
+	player.marker.stroke = paint player.marker.strokeWidth = 16
+	player.marker:setFillColor(0,0,0,0)
+	player.marker.isVisible = false 
 
 	player.foot1 = createFoot(1) player.group:insert(player.foot1)						-- feet
 	player.foot2 = createFoot(-1) player.group:insert(player.foot2)
@@ -138,7 +146,7 @@ for e = -9,9 do
 	local y = math.floor(n/4) * 140 + 100
 	display.newLine(x-40,y,x+40,y) display.newLine(x,y-40,x,y+40)
 	p1 = createPlayer()
-	p1.group.xScale,p1.group.yScale = 0.5,0.5
+	p1.group.xScale,p1.group.yScale = 1.2,1.2
 	alignPlayer(p1,e*2)
 	players[#players+1] = p1
 	setSkinTone(p1,170)
@@ -148,13 +156,15 @@ end
 timer.performWithDelay(80,function() 
 	local t = system.getTimer()
 	for _,ref in ipairs(players) do 
-		ref.group.rotation = math.floor(t/40) % 380
+		ref.group.rotation = math.floor(t/40+_*10) % 360
 		ref.shadow.rotation = -45-ref.group.rotation
-		local feet = math.floor(t/3) % 200 feet = math.abs(100-feet)
-		walkAnimation(ref,feet)
-		feet = math.floor(t/5) % 200 feet = math.abs(100-feet)
+		local f1 = math.sin(math.rad(ref.group.rotation-45)) * 15
+		alignPlayer(ref,f1)
+		f1 = math.floor(t/3) % 200 f1 = math.abs(100-f1)
+		walkAnimation(ref,f1)
+		f1 = math.floor(t/5) % 200 f1 = math.abs(100-f1)
 		local f2 = math.floor(t/27) % 200 f2 = math.abs(100-f2)
-		armAnimation(ref.arm1,feet,f2)
-		armAnimation(ref.arm2,feet,f2)
+		armAnimation(ref.arm1,f1,f2)
+		armAnimation(ref.arm2,f1,f2)
 	end
 end,-1)
