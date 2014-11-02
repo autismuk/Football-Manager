@@ -2,8 +2,8 @@ settings =
 {
     orientation =
     {
-        default = "portrait",
-        supported = { "portrait","portraitUpsideDown" }
+        default = "landscapeRight",
+        supported = { "landscapeRight","landscapeLeft" }
     },
 
     plugins =

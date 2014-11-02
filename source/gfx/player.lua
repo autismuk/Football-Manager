@@ -15,7 +15,6 @@
 
 local PlayerGraphic = Framework:createClass("gfx.player")
 
-PlayerGraphic.isCameraAtBottom = true 														-- the viewing angle up or down the screen
 PlayerGraphic.displayUnitRadius = 53 														-- display unit radius
 
 --//	Constructor, takes an assortment of parameters, but none are actually required
@@ -25,6 +24,7 @@ function PlayerGraphic:constructor(info)
 	self.m_modifier = math.random(0,10000)													-- a number used to make things unique
 	self.m_modifier2 = math.random(0,10000)
 	self.m_footPosition = 0 																-- percent in foot position (e.g. back/forward)
+	self.m_isCameraAtBottom = (info.camera == nil or info.camera == "bottom") 				-- camera position
 	self:construct() 																		-- build the physical graphics.
 	self:move(info.x or 0,info.y or 0)														-- move it.
 	self:showMarker(info.marker or false)													-- show the marker.
@@ -64,16 +64,6 @@ function PlayerGraphic:setMoving(isMoving)
 	self.m_isMoving = isMoving 
 end 
 
---//	Set camera position at the top or bottom - affects the player tilt, so , for example, if the camera is at the bottom
---// 	then players facing down the field have their front visible. The camera is at the opposite end of the goal, always.
---//	This function is static, e.g. all players will behave similarly. 
---//	@position [string]	top or bottom accordingly.
-
-function PlayerGraphic:setCamera(position)
-	assert(position == "top" or position == "bottom")
-	PlayerGraphic.isCameraAtBottom = (position == "bottom")
-end 
-
 --//	Set the rotation of the player, and adjust the body alignment accordingly
 --//	@angle [number]		rotation angle, defaults to current rotation.
 
@@ -81,9 +71,8 @@ function PlayerGraphic:setRotation(angle)
 	angle = angle or self.m_group.rotation 													-- the angle to rotate by.
 	self.m_group.rotation = angle 															-- rotate the player
 	self.m_gfx.shadow.rotation = -45-angle 													-- the shadow does not rotate
-	--if PlayerGraphic.isCameraAtBottom then self.m_gfx.shadow.rotation = 45-angle end 		-- adjust player shadow for camera position.
 	self.m_gfx.marker.rotation = -angle 													-- the marker does not rotate
-	if not PlayerGraphic.isCameraAtBottom then angle = angle + 180 end 						-- if camera at top, reverse it
+	if not self.m_isCameraAtBottom then angle = angle + 180 end 							-- if camera at top, reverse it
 	local event = math.sin(math.rad(angle)) * 12 											-- work out the lean given the camera angle
 	self:alignBody(event) 																	-- and lean the player only
 end 

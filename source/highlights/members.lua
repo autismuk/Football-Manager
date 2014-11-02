@@ -21,8 +21,6 @@ function MoveableGameObject:constructor(info)
 																								-- ** NOT A CORONA DISPLAY OBJECT **
 	self:move(info.x,info.y) 																	-- move game object to specified place.
 	self:rotate(info.direction) 																-- rotate to direction.
-	-- TODO: tick handler (see manager.coffee)
-	-- TODO: move to Method (see manager.coffee)
 end 		
 
 function MoveableGameObject:destructor()
@@ -45,19 +43,27 @@ function MoveableGameObject:rethink()
 end 
 
 function MoveableGameObject:move(x,y)
-	-- TODO: Map logical to physical.
-	self.m_displayObject:move(x or 100,y or 100)
+	x = ((x or 0)*0.9 + 512) / 1024 * display.contentWidth 
+	y = (y or 0)*0.57 + 40
+	self.m_displayObject:move(x,y)
 end 
 
 function MoveableGameObject:rotate(angle)
 	self.m_direction = angle or self.m_direction 												-- default is original value
-	self.m_displayObject:rotate(self.m_direction)												-- update direction.
+	self.m_displayObject:setRotation(self.m_direction)											-- update direction.
 end 
 
 --- ************************************************************************************************************************************************************************
+--															Base Player Class
 --- ************************************************************************************************************************************************************************
 
 local Player,SuperClass = Framework:createClass("highlights.objects.player","highlights.objects.base")
+
+function Player:createGameObject(info)
+	local displayObj = Framework:new("gfx.player",{ camera = info.camera }) 					-- create a player display object
+	displayObj:setRadius(32)																	-- set its size
+	return displayObj 																			-- and return it.
+end 
 
 local Goalkeeper,SuperClass = Framework:createClass("highlights.objects.goalkeeper","highlights.objects.player")
 
@@ -71,10 +77,9 @@ local Ball,SuperClass = Framework:createClass("highlights.objects.ball","highlig
 
 --[[
 
-	Create some logical players (Player has default colours) by implementing createGameObject() method.
-	Map logical to physical
-	tickHandler, moveTo handler code.
+	tickHandler, moveTo handler code, borrow from manager.coffee and test it.
 	shirt/shorts/skin code on initialisation.
+	then start building up .....	
 
 --]]
 
