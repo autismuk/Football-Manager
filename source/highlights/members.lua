@@ -42,10 +42,34 @@ end
 function MoveableGameObject:rethink() 
 end 
 
+function MoveableGameObject:moveTo(x,y)
+	x = x or self.m_xLogical y = y or self.m_yLogical 											-- default options
+	if x == self.m_xLogical and y == self.m_yLogical then return end 							-- already at that point, do nothing.
+	local dir = math.atan2(y - self.m_yLogical,x - self.m_xLogical)								-- work out direction to go
+	dir = math.deg(dir) 																		-- convert to degrees
+	local distance = math.sqrt((x-self.m_xLogical)*(x-self.m_xLogical)+ 						-- work out distance to move.
+															(y-self.m_yLogical)*(y-self.m_yLogical))	
+	self:rotate(dir)																			-- set the graphic rotation.
+	self.m_distanceToTravel = distance self.m_direction = math.rad(dir) 						-- set the travelling distance and direction.
+end																		
+
+function MoveableGameObject:tick(deltaTime)
+	if self.m_distanceToTravel <= 0 or self:isRethinkRequired() then 							-- reached end, or is a rethink required
+		self:rethink() 																			-- decide what to do next.
+		if self:isRethinkRequired() then self.m_distanceToTravel = 0 end 						-- if rethink required zero travel distance
+	end 
+	if self.m_distanceToTravel <= 0 then return end 											-- doing nothing.
+	local dist = math.min(deltaTime * self:getSpeed() * 1000,self.m_distanceToTravel)			-- how far to go.
+	self.m_distanceToTravel = self.m_distanceToTravel - dist 									-- reduce distance to go.
+	self:move(self.m_xLogical+dist*math.cos(self.m_direction),
+			  self.m_yLogical+dist*math.sin(self.m_direction))						 
+end 
+
 function MoveableGameObject:move(x,y)
-	x = ((x or 0)*0.9 + 512) / 1024 * display.contentWidth 
-	y = (y or 0)*0.57 + 40
-	self.m_displayObject:move(x,y)
+	self.m_xLogical,self.m_yLogical = x,y 														-- save logical position
+	x = ((x or 0)*0.9 + 512) / 1024 * display.contentWidth  									-- calculate actual physical position
+	y = (y or 0)*0.57 + 40 															
+	self.m_displayObject:move(x,y)																-- and draw it
 end 
 
 function MoveableGameObject:rotate(angle)
@@ -77,9 +101,9 @@ local Ball,SuperClass = Framework:createClass("highlights.objects.ball","highlig
 
 --[[
 
-	tickHandler, moveTo handler code, borrow from manager.coffee and test it.
 	shirt/shorts/skin code on initialisation.
-	then start building up .....	
+	abstract out logical->physical
+	then start building up highlights object.
 
 --]]
 

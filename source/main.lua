@@ -26,7 +26,6 @@ display.setStatusBar(display.HiddenStatusBar)													-- hide status bar.
 require("strict")																				-- install strict.lua to track globals etc.
 require("framework.framework")																	-- framework.
 
-
 --require("utils.sound")																			-- sfx singleton
 --require("utils.simplescene")																	-- simple scenes.
 --local fm = require("utils.fontmanager")															-- bitmap font manager
@@ -46,8 +45,14 @@ p1 = Framework:new("highlights.objects.player",{ x = 0,y = 0,direction = 90,came
 p2 = Framework:new("highlights.objects.player",{ x = -512,y = 512,camera = "bottom" })
 p3 = Framework:new("highlights.objects.player",{ x = 512,y = 1024,direction = -90,camera = "bottom" })
 
-timer.performWithDelay(20,function()
-	p1:move(0,system.getTimer()/4 % 1000) end,-1)
+p1:moveTo(500,800)
+p2:moveTo(0,0)
+p3:moveTo(512,0)
+
+timer.performWithDelay(30,function()
+	local dt = 0.03
+	p1:tick(dt) p2:tick(dt) p3:tick(dt)
+end,-1)
 
 --- ************************************************************************************************************************************************************************
 --[[
