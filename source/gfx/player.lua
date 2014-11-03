@@ -23,9 +23,9 @@ PlayerGraphic.displayUnitRadius = 53 														-- display unit radius
 function PlayerGraphic:constructor(info)
 	self.m_modifier = math.random(0,10000)													-- a number used to make things unique
 	self.m_modifier2 = math.random(0,10000)
-	self.m_footPosition = 0 																-- percent in foot position (e.g. back/forward)
 	self.m_isCameraAtBottom = (info.camera == nil or info.camera == "bottom") 				-- camera position
 	self:construct() 																		-- build the physical graphics.
+	self:setAnimation()
 	self:move(info.x or 0,info.y or 0)														-- move it.
 	self:showMarker(info.marker or false)													-- show the marker.
 	if info.shadow == false then self:showShadow(false) end  								-- show shadow, defaults to true e.g. must supply false.
@@ -33,8 +33,7 @@ function PlayerGraphic:constructor(info)
 	self:setStrip(info.shirt or "#FFFF00", info.shorts or "#008000")						-- Norwich City strip (Yellow/Green)
 	self:setHair(info.hair or "#663300")													-- Hair colour (brown)
 	self:setRotation(info.direction or 0)													-- set the rotation
-	self:tag("enterFrame,player")															-- these are ticked.
-	self:setMoving(false)																	-- player moving, so animate arms/feet
+	self:tag("player")																		-- these are tagged
 end 
 
 function PlayerGraphic:destructor()
@@ -47,6 +46,7 @@ end
 
 function PlayerGraphic:move(x,y)
 	self.m_group.x,self.m_group.y = x,y 
+	self:setAnimation()
 end 
 
 --//	Set the radius of the player, if you imagine them in a circle. 
@@ -55,13 +55,6 @@ end
 function PlayerGraphic:setRadius(radius)
 	local scale = radius / PlayerGraphic.displayUnitRadius 									-- the actual scale we want
 	self.m_group.xScale,self.m_group.yScale = scale,scale 
-end 
-
---//	Set player moving
---//	@isMoving [boolean] true if player moving
-
-function PlayerGraphic:setMoving(isMoving)
-	self.m_isMoving = isMoving 
 end 
 
 --//	Set the rotation of the player, and adjust the body alignment accordingly
@@ -122,12 +115,11 @@ function PlayerGraphic:showShadow(isShown)
 	self.m_gfx.shadow.isVisible = isShown 
 end 
 
---//	Handle ticks
---//	@deltaTime [number]		elapsed time in seconds.
+--//	Animate the player - this is done using the graphic position
+--//	so if the player stops, the animation will stop too.
 
-function PlayerGraphic:onEnterFrame(deltaTime)
-	if not self.m_isMoving then return end 													-- not moving, don't animate.
-	local feet = math.floor(system.getTimer()/(2+(self.m_modifier%200)/100)+self.m_modifier) % 200
+function PlayerGraphic:setAnimation()
+	local feet = (self.m_group.x+self.m_group.y)*4 % 200
 	feet = math.abs(100-feet)																-- position in sequence
 	self.m_footPosition = feet 																-- update position
 	self:repositionFeet() 																	-- reposition feet
@@ -140,9 +132,9 @@ end
 --//	@modifier [number] number used to modify movement
 
 function PlayerGraphic:animateArm(arm,modifier)
-	local armmod = math.floor(system.getTimer()/(5+modifier%1000/100)) % 360
+	local armmod = math.floor((self.m_group.x+self.m_group.y)*6/(3+modifier%1000/1000)) % 360
 	arm.group.rotation = math.sin(math.rad(armmod+modifier)) * 15
-	arm.group.xScale = math.cos(math.rad(armmod*1.7+modifier*3)) / 3 + 1
+	arm.group.xScale = math.cos(math.rad(armmod*1.7+modifier*3)) / 4 + 1.1
 end 
 
 --//	Set a graphic objects colour
@@ -175,7 +167,7 @@ end
 --//	Reposition the feet after an alignment or update of the foot position.
 
 function PlayerGraphic:repositionFeet()
-	local offset = (self.m_gfx.footMax-self.m_gfx.footMin) * self.m_footPosition / 100 		-- work out the position in the foot movement
+	local offset = (self.m_gfx.footMax-self.m_gfx.footMin) * (self.m_footPosition or 0)/100 -- work out the position in the foot movement
 	self.m_gfx.foot1.group.x = self.m_gfx.footMin + offset 									-- position feet accordingly.
 	self.m_gfx.foot2.group.x = self.m_gfx.footMax - offset
 end 

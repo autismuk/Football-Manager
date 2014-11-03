@@ -42,9 +42,12 @@ require("highlights.members")
 local r = display.newRect(0,0,960,640) r.anchorX,r.anchorY = 0,0 r:setFillColor(0,0.4,0)
 display.newLine(0,40,960,40).strokeWidth = 4
 
-p1 = Framework:new("highlights.objects.player",{ x = 0,y = 0,camera = "bottom" })
+p1 = Framework:new("highlights.objects.player",{ x = 0,y = 0,direction = 90,camera = "bottom" })
 p2 = Framework:new("highlights.objects.player",{ x = -512,y = 512,camera = "bottom" })
 p3 = Framework:new("highlights.objects.player",{ x = 512,y = 1024,direction = -90,camera = "bottom" })
+
+timer.performWithDelay(20,function()
+	p1:move(0,system.getTimer()/4 % 1000) end,-1)
 
 --- ************************************************************************************************************************************************************************
 --[[
