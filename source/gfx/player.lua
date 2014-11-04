@@ -29,7 +29,7 @@ function PlayerGraphic:constructor(info)
 	self:move(info.x or 0,info.y or 0)														-- move it.
 	self:showMarker(info.marker or false)													-- show the marker.
 	if info.shadow == false then self:showShadow(false) end  								-- show shadow, defaults to true e.g. must supply false.
-	self:setSkinTone(info.skin or 40)														-- skin colour a light brown.
+	self:setSkinTone(info.skin)																-- skin colour a light brown.
 	self:setStrip(info.shirt or "#FFFF00", info.shorts or "#008000")						-- Norwich City strip (Yellow/Green)
 	self:setHair(info.hair or "#663300")													-- Hair colour (brown)
 	self:setRotation(info.direction or 0)													-- set the rotation
@@ -37,7 +37,7 @@ function PlayerGraphic:constructor(info)
 end 
 
 function PlayerGraphic:destructor()
-	self.m_group:removeAll() self.m_group = nil self.m_gfx = nil 							-- remove all references to graphics objects.
+	self.m_group:removeSelf() self.m_group = nil self.m_gfx = nil 							-- remove all references and graphics objects.
 end 
 
 --//	Move the player to position x/y on the physical screen.
@@ -66,7 +66,7 @@ function PlayerGraphic:setRotation(angle)
 	self.m_gfx.shadow.rotation = -45-angle 													-- the shadow does not rotate
 	self.m_gfx.marker.rotation = -angle 													-- the marker does not rotate
 	if not self.m_isCameraAtBottom then angle = angle + 180 end 							-- if camera at top, reverse it
-	local event = math.sin(math.rad(angle)) * 12 											-- work out the lean given the camera angle
+	local event = math.sin(math.rad(angle)) * 15 											-- work out the lean given the camera angle
 	self:alignBody(event) 																	-- and lean the player only
 end 
 
@@ -152,14 +152,19 @@ function PlayerGraphic:fill(object,rgb,isLine)
 end 
 
 --//	Convert string RGB
---//	@rgb 	[rgb]	table or #RRGGBB as string.
+--//	@rgb 	[rgb]	table or #RRGGBB or #RGB as string.
 --//	@return [table]	RGB table.
 
 function PlayerGraphic:convert(rgb)
 	if type(rgb) == "string" then 															-- process strings.
-		assert(rgb:sub(1,1) == "#" and #rgb == 7)											-- basic checks.
-		rgb = { tonumber(rgb:sub(2,3),16)/255,												-- do the conversion.
-								tonumber(rgb:sub(4,5),16)/255,tonumber(rgb:sub(6,7),16)/255}
+		assert(rgb:sub(1,1) == "#" and (#rgb == 7 or #rgb == 4))							-- basic checks.
+		if #rgb == 7 then 
+			rgb = { tonumber(rgb:sub(2,3),16)/255,											-- do the conversion.
+									tonumber(rgb:sub(4,5),16)/255,tonumber(rgb:sub(6,7),16)/255}
+		else
+			rgb = { tonumber(rgb:sub(2,2),16)/15,											-- do the conversion.
+								tonumber(rgb:sub(3,3),16)/15,tonumber(rgb:sub(4,4),16)/15}
+		end
 	end 
 	return rgb
 end 

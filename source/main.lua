@@ -35,24 +35,12 @@ require("framework.framework")																	-- framework.
 --																				Start Up
 --- ************************************************************************************************************************************************************************
 
-require("gfx.player")
-require("highlights.members")
+require("highlights.manager")
+local demo = Framework:new("highlights.manager")
 
-local r = display.newRect(0,0,960,640) r.anchorX,r.anchorY = 0,0 r:setFillColor(0,0.4,0)
-display.newLine(0,40,960,40).strokeWidth = 4
+demo:start({})
+--demo:delete() Framework:dump()
 
-p1 = Framework:new("highlights.objects.player",{ x = 0,y = 0,direction = 90,camera = "bottom" })
-p2 = Framework:new("highlights.objects.player",{ x = -512,y = 512,camera = "bottom" })
-p3 = Framework:new("highlights.objects.player",{ x = 512,y = 1024,direction = -90,camera = "bottom" })
-
-p1:moveTo(500,800)
-p2:moveTo(0,0)
-p3:moveTo(512,0)
-
-timer.performWithDelay(30,function()
-	local dt = 0.03
-	p1:tick(dt) p2:tick(dt) p3:tick(dt)
-end,-1)
 
 --- ************************************************************************************************************************************************************************
 --[[
@@ -65,4 +53,11 @@ end,-1)
 --- ************************************************************************************************************************************************************************
 
 
+
+--[[
+
+	TODO: player picks up the ball.
+	TODO: fix up shirt/short/hair/skin colour properly.
+
+--]]
 
